@@ -5,31 +5,45 @@
 
     <groupId>io.github.vis0803</groupId>
     <artifactId>vis-kit</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
 
     <name>vis-kit</name>
 
     <description>vis-kit</description>
 
-    <url/>
+    <url>https://github.com/vis0803/vis-kit</url>
 
     <licenses>
-        <license/>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
     </licenses>
 
     <developers>
-        <developer/>
+        <developer>
+            <name>vis</name>
+            <email>15144042132@163.com</email>
+            <organization>vis</organization>
+            <organizationUrl>vis</organizationUrl>
+        </developer>
     </developers>
 
     <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
+        <connection>scm:git:git://github.com/vis0803/vis-kit.git</connection>
+        <developerConnection>scm:git:ssh://github.com/vis0803/vis-kit.git</developerConnection>
+        <url>https://github.com/vis0803/vis-kit</url>
     </scm>
+
 
     <properties>
         <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.encoding>UTF-8</project.encoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
     </properties>
 
     <dependencies>
@@ -38,6 +52,64 @@
 
     <build>
         <plugins>
+
+            <!-- 生成源码包 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 生成 javadoc 包 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.2</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- GPG 签名插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.7</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Central Portal 发布插件（新版官方推荐） -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <autoPublish>true</autoPublish>
+                    <publishingServerId>vis</publishingServerId>
+                </configuration>
+            </plugin>
 
         </plugins>
     </build>
