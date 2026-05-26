@@ -4,7 +4,10 @@ import vis.kit.IdGenerator.contract.IIdGenerator;
 import vis.kit.IdGenerator.contract.IdGeneratorOptions;
 import vis.kit.IdGenerator.idgen.DefaultIdGenerator;
 
-import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 预分配64个，workId取值 0-63 ，默认使用 0
@@ -29,6 +32,7 @@ public class IdKit {
     }
 
     public static long nextId(int workId) {
+        TOTAL_GENERATED.incrementAndGet();
         return WORKERS[workId].newLong();
     }
 
@@ -36,33 +40,40 @@ public class IdKit {
         return nextId(workId) + "";
     }
 
-    private static final HashSet<Long> nowR = new HashSet<>();
+    private static final AtomicLong TOTAL_GENERATED = new AtomicLong();
+    private static final AtomicInteger THREAD_COUNT = new AtomicInteger();
+    private static final Set<Long> ALL_IDS = ConcurrentHashMap.newKeySet();
+    private static final Set<Long> DUPLICATES = ConcurrentHashMap.newKeySet();
 
-    private static final HashSet<Long> R = new HashSet<>();
+    public static void main(String[] args) {
 
-    public static void main(String[] args) throws InterruptedException {
-        int count = 0;
+        long start = System.currentTimeMillis();
 
-        for (int k = 0; k < 2000; k++) {
-            for (int i = 0; i < 60; i++) {
+        for (int k = 0; k < 20000; k++) {
+            for (int i = 0; i < 50; i++) {
                 final int workerId = i;
+                THREAD_COUNT.incrementAndGet();
                 Thread vt1 = Thread.startVirtualThread(() -> {
                     long l = nextId(workerId);
-                    if (nowR.contains(l)) {
+                    if (!ALL_IDS.add(l)) {
                         System.out.println(l);
-                        R.add(l);
+                        DUPLICATES.add(l);
                     }
-                    nowR.add(l);
                 });
-                count++;
             }
         }
-        System.out.println("12W 条 多线程同时执行，独自生成ID");
-        System.out.println("添加5秒延迟，等待数据结束");
-        Thread.sleep(5000);
-        System.out.println("累计生成：" + count + "条");
-        System.out.println("重复数据：" + R.size() + "条");
-        System.out.println("不重复数据：" + nowR.size() + "条");
+        System.out.println("100W条 多线程同时执行，分配给50个生成器 独自生成ID");
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("累计启动线程：" + THREAD_COUNT.get() + "条");
+        System.out.println("累计生成数据：" + TOTAL_GENERATED.get() + "条");
+        System.out.println("重复数据：" + DUPLICATES.size() + "条");
+        System.out.println("不重复数据：" + ALL_IDS.size() + "条");
+        long end = System.currentTimeMillis();
+        System.out.println("累计执行时间：" + ((end - start) / 1000.0) + "秒");
 
     }
 }

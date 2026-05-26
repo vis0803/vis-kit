@@ -48,7 +48,7 @@ public class SnowWorkerM1 implements ISnowWorker {
     protected final int TopOverCostCount;
 
     protected final byte _TimestampShift;
-    protected final static byte[] _SyncLock = new byte[0];
+    protected final byte[] _SyncLock = new byte[0];
 
     protected short _CurrentSeqNumber;
     protected long _LastTimeTick = 0;

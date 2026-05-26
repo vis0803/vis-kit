@@ -14,7 +14,7 @@ import vis.kit.IdGenerator.core.SnowWorkerM2;
 
 public class DefaultIdGenerator implements IIdGenerator {
 
-    private static ISnowWorker _SnowWorker = null;
+    private ISnowWorker _SnowWorker = null;
 
     public DefaultIdGenerator(IdGeneratorOptions options) throws IdGeneratorException {
         if (options == null) {
